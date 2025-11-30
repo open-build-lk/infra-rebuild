@@ -1,0 +1,8 @@
+export { Home } from "./Home";
+export { MapPage } from "./MapPage";
+export { Reports } from "./Reports";
+export { Projects } from "./Projects";
+export { Dashboard } from "./Dashboard";
+export { Login } from "./Login";
+export { Register } from "./Register";
+export { SubmitReport } from "./SubmitReport";
