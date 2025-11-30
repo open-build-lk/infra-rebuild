@@ -23,7 +23,7 @@ interface RoadTableProps {
 // Red color for blocked roads
 const BLOCKED_COLOR = "#DC2626";
 
-export function RoadTable({ onProvinceClick, onSegmentClick }: RoadTableProps = {}) {
+export function RoadTable({ onProvinceClick, onSegmentClick }: RoadTableProps) {
   const segments = useRoadSegments();
   const {
     selectedProvince,
