@@ -1,0 +1,24 @@
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuthStore } from "@/stores/auth";
+
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  allowedRoles: string[];
+}
+
+export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+  const { user } = useAuthStore();
+  const location = useLocation();
+
+  if (!user) {
+    // Not logged in, redirect to login with return URL
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!allowedRoles.includes(user.role)) {
+    // Logged in but insufficient permissions, redirect to home
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}

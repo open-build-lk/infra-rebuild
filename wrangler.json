@@ -11,5 +11,19 @@
   "assets": {
     "directory": "./dist/client",
     "not_found_handling": "single-page-application"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "rda-status-db",
+      "database_id": "169b4220-37c7-488a-aa5d-f4912bdddedc",
+      "migrations_dir": "./src/worker/db/migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA_BUCKET",
+      "bucket_name": "rda-status-media"
+    }
+  ]
 }
