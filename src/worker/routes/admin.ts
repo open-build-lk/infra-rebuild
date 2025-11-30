@@ -7,12 +7,16 @@ import {
   mapReasonToSeverity,
 } from "../../react-app/data/initialRoadSegments";
 import { snappedRoadPaths } from "../../react-app/data/snappedRoadPaths";
+import { authMiddleware, requireRole } from "../middleware/auth";
 
 const adminRoutes = new Hono<{ Bindings: Env }>();
 
+// Apply auth middleware to all admin routes - requires login
+adminRoutes.use("/*", authMiddleware());
+
 // POST /api/v1/admin/import-segments - Import hardcoded segments to database
-// Note: In production, add authMiddleware() and requireRole("admin", "super_admin")
-adminRoutes.post("/import-segments", async (c) => {
+// Requires admin or super_admin role
+adminRoutes.post("/import-segments", requireRole("admin", "super_admin"), async (c) => {
   const db = createDb(c.env.DB);
   const now = new Date();
 
@@ -99,7 +103,8 @@ adminRoutes.post("/import-segments", async (c) => {
 });
 
 // GET /api/v1/admin/segments-count - Check how many segments exist
-adminRoutes.get("/segments-count", async (c) => {
+// Requires admin or super_admin role
+adminRoutes.get("/segments-count", requireRole("admin", "super_admin"), async (c) => {
   const db = createDb(c.env.DB);
   const results = await db.select().from(roadSegments);
   return c.json({ count: results.length });
