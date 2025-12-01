@@ -3,7 +3,6 @@ import { Layout } from "@/components/layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import {
   Home,
-  Reports,
   Projects,
   Dashboard,
   Login,
@@ -20,7 +19,6 @@ function AppContent() {
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Home />} />
-        <Route path="/reports" element={<Reports />} />
         <Route path="/submit" element={<SubmitReport />} />
         <Route path="/report" element={<ReportIncident />} />
         <Route path="/report-verified" element={<ReportVerified />} />

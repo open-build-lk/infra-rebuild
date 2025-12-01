@@ -3,10 +3,68 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { createDb } from "../db";
 import { damageReports, mediaAttachments } from "../db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, isNull } from "drizzle-orm";
 import { authMiddleware, optionalAuthMiddleware, getAuth } from "../middleware/auth";
 
 const reportsRoutes = new Hono<{ Bindings: Env }>();
+
+// Helper to reverse geocode coordinates to location name using Nominatim
+async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`,
+      {
+        headers: {
+          "User-Agent": "SriLankaRoadStatus/1.0 (road-lk.org)",
+          "Accept-Language": "en",
+        },
+      }
+    );
+
+    if (!response.ok) return null;
+
+    const data = await response.json() as {
+      address?: {
+        road?: string;
+        neighbourhood?: string;
+        suburb?: string;
+        city?: string;
+        town?: string;
+        village?: string;
+        county?: string;
+        state?: string;
+        state_district?: string;
+        country?: string;
+      };
+      display_name?: string;
+    };
+
+    if (!data.address) return null;
+
+    const addr = data.address;
+    // Build a concise location string
+    const parts: string[] = [];
+
+    // Road name if available
+    if (addr.road) parts.push(addr.road);
+
+    // Area (suburb/neighbourhood/village)
+    const area = addr.neighbourhood || addr.suburb || addr.village || addr.town;
+    if (area && !parts.includes(area)) parts.push(area);
+
+    // City/District
+    const city = addr.city || addr.county || addr.state_district;
+    if (city && !parts.includes(city)) parts.push(city);
+
+    // Province/State
+    if (addr.state && !parts.includes(addr.state)) parts.push(addr.state);
+
+    return parts.length > 0 ? parts.join(", ") : null;
+  } catch (error) {
+    console.error("Reverse geocode error:", error);
+    return null;
+  }
+}
 
 // Helper to send verification email via Mailgun
 async function sendVerificationEmail(
@@ -132,6 +190,9 @@ reportsRoutes.post(
     const reportId = crypto.randomUUID();
     const reportNumber = generateReportNumber();
 
+    // Reverse geocode to get location name (don't block on failure)
+    const locationName = await reverseGeocode(data.latitude, data.longitude);
+
     // Create the damage report
     await db.insert(damageReports).values({
       id: reportId,
@@ -144,6 +205,7 @@ reportsRoutes.post(
       sourceChannel: "mobile_web",
       latitude: data.latitude,
       longitude: data.longitude,
+      locationName,
       assetType: "road",
       damageType: data.damageType,
       severity: 2, // Default medium severity for citizen reports
@@ -168,7 +230,7 @@ reportsRoutes.post(
           .where(
             and(
               eq(mediaAttachments.storageKey, storageKey),
-              eq(mediaAttachments.reportId, null as unknown as string)
+              isNull(mediaAttachments.reportId)
             )
           );
       }

@@ -1,5 +1,4 @@
 export { Home } from "./Home";
-export { Reports } from "./Reports";
 export { Projects } from "./Projects";
 export { Dashboard } from "./Dashboard";
 export { Login } from "./Login";

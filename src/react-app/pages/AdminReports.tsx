@@ -25,6 +25,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -79,6 +80,7 @@ interface Report {
   status: string;
   latitude: number;
   longitude: number;
+  locationName: string | null;
   description: string;
   passabilityLevel: string | null;
   anonymousName: string | null;
@@ -123,11 +125,14 @@ const damageTypeLabels: Record<string, string> = {
 };
 
 const passabilityOptions = [
-  { value: "", label: "Not specified" },
+  { value: "unspecified", label: "Not specified" },
+  { value: "unpassable", label: "Unpassable" },
+  { value: "foot", label: "Foot only" },
+  { value: "bike", label: "Bike" },
   { value: "3wheeler", label: "3-Wheeler" },
   { value: "car", label: "Car" },
+  { value: "bus", label: "Bus" },
   { value: "truck", label: "Truck" },
-  { value: "impassable", label: "Impassable" },
 ];
 
 const columnHelper = createColumnHelper<Report>();
@@ -347,7 +352,9 @@ export function AdminReports() {
             className="inline-flex items-center gap-1 text-primary-600 hover:underline text-sm"
           >
             <MapPin className="w-3 h-3" />
-            View
+            {info.row.original.locationName
+              ? info.row.original.locationName.split(",").slice(0, 2).join(", ")
+              : "View"}
           </a>
         ),
       }),
@@ -565,6 +572,9 @@ export function AdminReports() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Report: {editingReport?.reportNumber}</DialogTitle>
+            <DialogDescription>
+              Update the report details below. Changes will be saved when you click Save.
+            </DialogDescription>
           </DialogHeader>
           {editingReport && (
             <div className="grid gap-4 py-4">
@@ -638,11 +648,11 @@ export function AdminReports() {
                 <div className="space-y-2">
                   <Label>Passability Level</Label>
                   <Select
-                    value={editingReport.passabilityLevel || ""}
+                    value={editingReport.passabilityLevel || "unspecified"}
                     onValueChange={(value: string) =>
                       setEditingReport({
                         ...editingReport,
-                        passabilityLevel: value || null,
+                        passabilityLevel: value === "unspecified" ? null : value,
                       })
                     }
                   >
@@ -830,13 +840,13 @@ export function AdminReports() {
                     {selectedReport.media.map((m) => (
                       <a
                         key={m.id}
-                        href={`/api/v1/media/${m.storageKey}`}
+                        href={`/api/v1/upload/photo/${m.storageKey}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 hover:opacity-90 transition-opacity"
                       >
                         <img
-                          src={`/api/v1/media/${m.storageKey}`}
+                          src={`/api/v1/upload/photo/${m.storageKey}`}
                           alt={m.originalFilename || "Report image"}
                           className="w-full h-full object-cover"
                         />
@@ -898,8 +908,11 @@ export function AdminReports() {
 
                   <div>
                     <Label className="text-xs text-gray-500">Location</Label>
+                    {selectedReport.locationName && (
+                      <p className="font-medium mt-1">{selectedReport.locationName}</p>
+                    )}
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-sm font-mono">
+                      <span className="text-sm font-mono text-gray-500">
                         {selectedReport.latitude.toFixed(6)}, {selectedReport.longitude.toFixed(6)}
                       </span>
                       <a
