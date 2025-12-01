@@ -191,11 +191,13 @@ mapRoutes.get("/incidents", async (c) => {
       id: damageReports.id,
       latitude: damageReports.latitude,
       longitude: damageReports.longitude,
+      locationName: damageReports.locationName,
       damageType: damageReports.damageType,
       passabilityLevel: damageReports.passabilityLevel,
       isSingleLane: damageReports.isSingleLane,
       description: damageReports.description,
       createdAt: damageReports.createdAt,
+      reportNumber: damageReports.reportNumber,
     })
     .from(damageReports)
     .where(
@@ -209,7 +211,35 @@ mapRoutes.get("/incidents", async (c) => {
     )
     .orderBy(desc(damageReports.createdAt));
 
-  return c.json(reports);
+  // Parse locationName to extract province and district
+  const reportsWithLocation = reports.map(report => {
+    let districtName = null;
+    let provinceName = null;
+    let roadLocation = report.locationName;
+
+    // Format is typically: "Road Name (district, province)" or "(district, province)"
+    if (report.locationName) {
+      const match = report.locationName.match(/\(([^,]+),\s*([^)]+)\)/);
+      if (match) {
+        districtName = match[1].trim();
+        provinceName = match[2].trim();
+        // Extract road/location name (part before the parentheses)
+        const roadMatch = report.locationName.match(/^([^(]+)/);
+        if (roadMatch && roadMatch[1].trim()) {
+          roadLocation = roadMatch[1].trim();
+        }
+      }
+    }
+
+    return {
+      ...report,
+      districtName,
+      provinceName,
+      roadLocation,
+    };
+  });
+
+  return c.json(reportsWithLocation);
 });
 
 export { mapRoutes };

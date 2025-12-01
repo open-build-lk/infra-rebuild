@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { LatLngBounds } from "leaflet";
-import { useRoadSegments, ProcessedRoadSegment } from "@/hooks/useRoadSegments";
+import { useCitizenIncidents, ProcessedIncident } from "@/hooks/useCitizenIncidents";
 import { DAMAGE_ICONS } from "@/components/map/DisasterMap";
 import { useMapViewStore } from "@/stores/mapView";
 import { cn } from "@/lib/utils";
 
 interface ProvinceGroup {
   province: string;
-  segments: ProcessedRoadSegment[];
+  reports: ProcessedIncident[];
   bounds: LatLngBounds;
 }
 
@@ -21,7 +21,7 @@ const BLOCKED_COLOR = "#DC2626";
 
 export function RoadTable(props: RoadTableProps = {}) {
   const { onSegmentClick } = props;
-  const { segments, isLoading, error } = useRoadSegments();
+  const { incidents, isLoading, error } = useCitizenIncidents();
   const {
     selectedProvince,
     selectedSegmentId,
@@ -30,29 +30,27 @@ export function RoadTable(props: RoadTableProps = {}) {
     selectSegment,
   } = useMapViewStore();
 
-  // Group segments by province and calculate bounds
+  // Group incidents by province and calculate bounds
   const provinceGroups = useMemo<ProvinceGroup[]>(() => {
-    const groups: Record<string, ProcessedRoadSegment[]> = {};
+    const groups: Record<string, ProcessedIncident[]> = {};
 
-    segments.forEach((seg) => {
-      if (!groups[seg.province]) {
-        groups[seg.province] = [];
+    incidents.forEach((inc) => {
+      if (!groups[inc.provinceName]) {
+        groups[inc.provinceName] = [];
       }
-      groups[seg.province].push(seg);
+      groups[inc.provinceName].push(inc);
     });
 
     return Object.entries(groups)
-      .map(([province, segs]) => {
+      .map(([province, reps]) => {
         // Calculate bounds for this province
         const lats: number[] = [];
         const lngs: number[] = [];
 
-        segs.forEach((seg) => {
-          seg.path.forEach((point) => {
-            const [lat, lng] = point as [number, number];
-            lats.push(lat);
-            lngs.push(lng);
-          });
+        reps.forEach((rep) => {
+          const [lat, lng] = rep.position as [number, number];
+          lats.push(lat);
+          lngs.push(lng);
         });
 
         const bounds = new LatLngBounds(
@@ -62,19 +60,24 @@ export function RoadTable(props: RoadTableProps = {}) {
 
         return {
           province,
-          segments: segs.sort((a, b) => a.roadNo.localeCompare(b.roadNo)),
+          reports: reps.sort((a, b) => {
+            // Sort by district first, then by report number
+            const districtCompare = a.districtName.localeCompare(b.districtName);
+            if (districtCompare !== 0) return districtCompare;
+            return a.reportNumber.localeCompare(b.reportNumber);
+          }),
           bounds,
         };
       })
-      .sort((a, b) => b.segments.length - a.segments.length); // Sort by count descending
-  }, [segments]);
+      .sort((a, b) => b.reports.length - a.reports.length); // Sort by count descending
+  }, [incidents]);
 
   const handleProvinceClick = (group: ProvinceGroup) => {
     selectProvince(group.province, group.bounds);
   };
 
-  const handleSegmentClick = (segment: ProcessedRoadSegment) => {
-    selectSegment(segment.id, segment.midpoint);
+  const handleReportClick = (report: ProcessedIncident) => {
+    selectSegment(report.id, report.position);
     onSegmentClick?.();
   };
 
@@ -117,7 +120,7 @@ export function RoadTable(props: RoadTableProps = {}) {
           Affected Roads
         </h2>
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          {segments.length} road segments in {provinceGroups.length} provinces
+          {incidents.length} citizen reports in {provinceGroups.length} provinces
         </p>
       </div>
 
@@ -147,25 +150,25 @@ export function RoadTable(props: RoadTableProps = {}) {
                   {group.province}
                 </span>
                 <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                  {group.segments.length}
+                  {group.reports.length}
                 </span>
               </button>
 
-              {/* Expanded segment list */}
+              {/* Expanded report list */}
               {isExpanded && (
                 <div className="bg-gray-50 dark:bg-gray-800/50">
-                  {group.segments.map((segment) => {
-                    const isSegmentSelected = selectedSegmentId === segment.id;
+                  {group.reports.map((report) => {
+                    const isReportSelected = selectedSegmentId === report.id;
                     const damageIcon =
-                      DAMAGE_ICONS[segment.damageType] || DAMAGE_ICONS.other;
+                      DAMAGE_ICONS[report.damageType] || DAMAGE_ICONS.other;
 
                     return (
                       <button
-                        key={segment.id}
-                        onClick={() => handleSegmentClick(segment)}
+                        key={report.id}
+                        onClick={() => handleReportClick(report)}
                         className={cn(
                           "flex w-full items-center gap-3 border-b border-gray-100 px-4 py-2.5 text-left transition-colors hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-700",
-                          isSegmentSelected &&
+                          isReportSelected &&
                             "bg-blue-100 dark:bg-blue-900/30"
                         )}
                       >
@@ -180,13 +183,13 @@ export function RoadTable(props: RoadTableProps = {}) {
                           {damageIcon.emoji}
                         </span>
 
-                        {/* Road info */}
+                        {/* Report info */}
                         <div className="min-w-0 flex-1">
                           <span className="text-sm font-medium text-gray-900 dark:text-white">
-                            {segment.roadNo}
+                            {report.roadLocation || report.districtName}
                           </span>
                           <p className="truncate text-xs text-gray-500 dark:text-gray-400">
-                            {segment.roadName || segment.reason}
+                            {report.districtName} • {report.reportNumber}
                           </p>
                         </div>
                       </button>

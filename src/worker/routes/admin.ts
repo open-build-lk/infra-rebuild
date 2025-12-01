@@ -2,8 +2,9 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { createDb } from "../db";
-import { damageReports, roadSegments, mediaAttachments, user, userInvitations } from "../db/schema";
+import { damageReports, roadSegments, mediaAttachments, user, userInvitations, locations } from "../db/schema";
 import { eq, desc } from "drizzle-orm";
+import { alias } from "drizzle-orm/sqlite-core";
 import { sendEmail, getInvitationEmailHtml } from "../services/email";
 import { getAuth } from "../middleware/auth";
 import {
@@ -120,7 +121,11 @@ adminRoutes.get("/segments-count", requireRole("admin", "super_admin"), async (c
 adminRoutes.get("/reports", requireRole("field_officer", "planner", "admin", "super_admin"), async (c) => {
   const db = createDb(c.env.DB);
 
-  const reports = await db
+  // Create aliases for joining locations table twice
+  const provinceLocation = alias(locations, "province_location");
+  const districtLocation = alias(locations, "district_location");
+
+  const rawReports = await db
     .select({
       id: damageReports.id,
       reportNumber: damageReports.reportNumber,
@@ -139,9 +144,44 @@ adminRoutes.get("/reports", requireRole("field_officer", "planner", "admin", "su
       sourceType: damageReports.sourceType,
       createdAt: damageReports.createdAt,
       updatedAt: damageReports.updatedAt,
+      provinceId: damageReports.provinceId,
+      districtId: damageReports.districtId,
+      provinceName: provinceLocation.nameEn,
+      districtName: districtLocation.nameEn,
     })
     .from(damageReports)
+    .leftJoin(provinceLocation, eq(damageReports.provinceId, provinceLocation.id))
+    .leftJoin(districtLocation, eq(damageReports.districtId, districtLocation.id))
     .orderBy(desc(damageReports.createdAt));
+
+  // Parse locationName to extract district and province if not already populated
+  const reports = rawReports.map(report => {
+    let districtName = report.districtName;
+    let provinceName = report.provinceName;
+    let roadLocation = report.locationName;
+
+    // If district/province not populated but locationName exists, parse it
+    // Format is typically: "Road Name (district, province)" or "(district, province)"
+    if ((!districtName || !provinceName) && report.locationName) {
+      const match = report.locationName.match(/\(([^,]+),\s*([^)]+)\)/);
+      if (match) {
+        districtName = districtName || match[1].trim();
+        provinceName = provinceName || match[2].trim();
+        // Extract road/location name (part before the parentheses)
+        const roadMatch = report.locationName.match(/^([^(]+)/);
+        if (roadMatch) {
+          roadLocation = roadMatch[1].trim() || report.locationName;
+        }
+      }
+    }
+
+    return {
+      ...report,
+      districtName: districtName || null,
+      provinceName: provinceName || null,
+      roadLocation: roadLocation || null,
+    };
+  });
 
   return c.json(reports);
 });

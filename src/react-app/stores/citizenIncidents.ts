@@ -5,21 +5,30 @@ export interface CitizenIncidentData {
   id: string;
   latitude: number;
   longitude: number;
+  locationName: string | null;
   damageType: string;
   passabilityLevel: string | null;
   isSingleLane: boolean | null;
   description: string | null;
   createdAt: string;
+  reportNumber: string;
+  districtName: string | null;
+  provinceName: string | null;
+  roadLocation: string | null;
 }
 
 export interface ProcessedIncident {
   id: string;
+  reportNumber: string;
   position: LatLngExpression;
   damageType: string;
   passabilityLevel: string;
   isSingleLane: boolean;
   description: string;
   createdAt: string;
+  districtName: string;
+  provinceName: string;
+  roadLocation: string | null;
 }
 
 interface CitizenIncidentsState {
@@ -38,15 +47,19 @@ function processIncidents(
   rawIncidents: CitizenIncidentData[]
 ): ProcessedIncident[] {
   return rawIncidents
-    .filter((inc) => inc.latitude && inc.longitude)
+    .filter((inc) => inc.latitude && inc.longitude && inc.provinceName && inc.districtName)
     .map((inc) => ({
       id: inc.id,
+      reportNumber: inc.reportNumber,
       position: [inc.latitude, inc.longitude] as LatLngExpression,
       damageType: inc.damageType || "other",
       passabilityLevel: inc.passabilityLevel || "unknown",
       isSingleLane: inc.isSingleLane ?? false,
       description: inc.description || "No description provided",
       createdAt: inc.createdAt,
+      districtName: inc.districtName || "Unknown",
+      provinceName: inc.provinceName || "Unknown",
+      roadLocation: inc.roadLocation,
     }));
 }
 
