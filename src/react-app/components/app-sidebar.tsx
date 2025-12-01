@@ -1,9 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import {
   Home,
-  Map,
-  LayoutDashboard,
-  FolderKanban,
   Shield,
   AlertTriangle,
   ChevronUp,
@@ -49,23 +46,19 @@ const platformItems: NavItem[] = [
     url: "/",
     icon: Home,
   },
-  {
-    title: "Reports Map",
-    url: "/reports",
-    icon: Map,
-  },
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-    roles: ["field_officer", "planner", "admin", "super_admin", "stakeholder"],
-  },
-  {
-    title: "Projects",
-    url: "/projects",
-    icon: FolderKanban,
-    roles: ["planner", "admin", "super_admin", "stakeholder"],
-  },
+  // Dashboard and Projects hidden for now
+  // {
+  //   title: "Dashboard",
+  //   url: "/dashboard",
+  //   icon: LayoutDashboard,
+  //   roles: ["field_officer", "planner", "admin", "super_admin", "stakeholder"],
+  // },
+  // {
+  //   title: "Projects",
+  //   url: "/projects",
+  //   icon: FolderKanban,
+  //   roles: ["planner", "admin", "super_admin", "stakeholder"],
+  // },
 ];
 
 const adminItems: NavItem[] = [

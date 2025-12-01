@@ -127,6 +127,7 @@ adminRoutes.get("/reports", requireRole("admin", "super_admin"), async (c) => {
       status: damageReports.status,
       latitude: damageReports.latitude,
       longitude: damageReports.longitude,
+      locationName: damageReports.locationName,
       description: damageReports.description,
       passabilityLevel: damageReports.passabilityLevel,
       anonymousName: damageReports.anonymousName,

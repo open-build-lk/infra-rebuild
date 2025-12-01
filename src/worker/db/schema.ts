@@ -53,6 +53,7 @@ export const damageReports = sqliteTable(
     districtId: text("district_id").references(() => locations.id),
     cityId: text("city_id").references(() => locations.id),
     landmark: text("landmark"),
+    locationName: text("location_name"), // Reverse-geocoded address/area name
     // Asset info
     assetType: text("asset_type").notNull(), // road, bridge, culvert, rail_track, etc.
     assetId: text("asset_id"),
