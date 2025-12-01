@@ -9,34 +9,26 @@ import {
 } from "lucide-react";
 import { DisasterMap } from "@/components/map";
 import { RoadTable } from "@/components/road-table";
-import {
-  initialRoadSegments,
-  mapReasonToDamageType,
-  mapReasonToSeverity,
-} from "@/data/initialRoadSegments";
+import { useRoadSegments } from "@/hooks/useRoadSegments";
 
 export function Home() {
   const [showMobileList, setShowMobileList] = useState(false);
+  const { segments } = useRoadSegments();
 
-  // Compute stats from initial road segments
+  // Compute stats from fetched road segments
   const stats = useMemo(() => {
-    // Filter to only road segments (not point damage)
-    const segments = initialRoadSegments.filter(
-      (seg) => seg.fromLat !== seg.toLat || seg.fromLng !== seg.toLng
-    );
-
     // Count by damage type
     const damageTypes: Record<string, number> = {};
     segments.forEach((seg) => {
-      const type = mapReasonToDamageType(seg.reason);
+      const type = seg.damageType || "other";
       damageTypes[type] = (damageTypes[type] || 0) + 1;
     });
 
     // Count by severity
     const severityCounts = { critical: 0, high: 0, medium: 0, low: 0 };
     segments.forEach((seg) => {
-      const severity = mapReasonToSeverity(seg.reason);
-      if (severity === 4) severityCounts.critical++;
+      const severity = seg.severity || 2;
+      if (severity >= 4) severityCounts.critical++;
       else if (severity === 3) severityCounts.high++;
       else if (severity === 2) severityCounts.medium++;
       else severityCounts.low++;
@@ -53,7 +45,7 @@ export function Home() {
       critical: severityCounts.critical,
       high: severityCounts.high,
     };
-  }, []);
+  }, [segments]);
 
   return (
     <div className="flex h-full flex-col">
