@@ -88,6 +88,19 @@ export function createAuth(env: Env) {
             </html>
           `;
 
+          // Development bypass - log the magic link URL instead of sending email
+          if (env.ENVIRONMENT === "development" || !env.MAILGUN_API_KEY) {
+            console.log("=".repeat(80));
+            console.log("🔐 MAGIC LINK FOR LOCAL DEVELOPMENT");
+            console.log("=".repeat(80));
+            console.log(`Email: ${email}`);
+            console.log(`Magic Link: ${url}`);
+            console.log("=".repeat(80));
+            console.log("Copy the URL above and paste it into your browser to log in.");
+            console.log("=".repeat(80));
+            return;
+          }
+
           await sendEmailViaMailgun(
             env,
             email,
