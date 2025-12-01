@@ -16,8 +16,8 @@ import {
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SIDEBAR_WIDTH = "16rem";
-const SIDEBAR_WIDTH_MOBILE = "18rem";
+const SIDEBAR_WIDTH = "20rem";
+const SIDEBAR_WIDTH_MOBILE = "20rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
@@ -252,6 +252,10 @@ const Sidebar = React.forwardRef<
           <div
             data-sidebar="sidebar"
             className="flex h-full w-full flex-col bg-white dark:bg-gray-950 group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-gray-200 group-data-[variant=floating]:shadow dark:group-data-[variant=floating]:border-gray-800"
+            style={{
+              minWidth: state === "collapsed" ? SIDEBAR_WIDTH_ICON : SIDEBAR_WIDTH,
+              maxWidth: state === "collapsed" ? SIDEBAR_WIDTH_ICON : undefined,
+            }}
           >
             {children}
           </div>
