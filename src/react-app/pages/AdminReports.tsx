@@ -90,6 +90,11 @@ interface Report {
   sourceType: string;
   createdAt: string;
   updatedAt: string;
+  provinceId: string | null;
+  districtId: string | null;
+  provinceName: string | null;
+  districtName: string | null;
+  roadLocation: string | null;
 }
 
 interface ReportWithMedia extends Report {
@@ -342,8 +347,43 @@ export function AdminReports() {
           </span>
         ),
       }),
+      columnHelper.accessor("provinceName", {
+        header: "Province",
+        cell: (info) => {
+          const value = info.getValue();
+          return value ? (
+            <span className="text-sm">{value}</span>
+          ) : (
+            <span className="text-gray-400 text-sm">-</span>
+          );
+        },
+      }),
+      columnHelper.accessor("districtName", {
+        header: "District",
+        cell: (info) => {
+          const value = info.getValue();
+          return value ? (
+            <span className="text-sm">{value}</span>
+          ) : (
+            <span className="text-gray-400 text-sm">-</span>
+          );
+        },
+      }),
+      columnHelper.accessor("roadLocation", {
+        header: "Road/Location",
+        cell: (info) => {
+          const value = info.getValue();
+          return value ? (
+            <span className="text-sm max-w-[200px] truncate block" title={value}>
+              {value}
+            </span>
+          ) : (
+            <span className="text-gray-400 text-sm">-</span>
+          );
+        },
+      }),
       columnHelper.accessor("latitude", {
-        header: "Location",
+        header: "Map",
         cell: (info) => (
           <a
             href={`https://www.google.com/maps?q=${info.getValue()},${info.row.original.longitude}`}
@@ -352,9 +392,7 @@ export function AdminReports() {
             className="inline-flex items-center gap-1 text-primary-600 hover:underline text-sm"
           >
             <MapPin className="w-3 h-3" />
-            {info.row.original.locationName
-              ? info.row.original.locationName.split(",").slice(0, 2).join(", ")
-              : "View"}
+            View
           </a>
         ),
       }),
