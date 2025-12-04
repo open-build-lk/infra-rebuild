@@ -8,7 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { DisasterMap } from "@/components/map";
-import { RoadTable } from "@/components/road-table";
+import { InfraTable } from "@/components/infra-table";
 import { useCitizenIncidents } from "@/hooks/useCitizenIncidents";
 
 export function Home() {
@@ -137,7 +137,7 @@ export function Home() {
       <div className="relative flex min-h-0 flex-1 overflow-hidden">
         {/* Road table - desktop sidebar */}
         <div className="hidden w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-800 lg:block xl:w-96">
-          <RoadTable />
+          <InfraTable />
         </div>
 
         {/* Map - hidden on mobile when menu is open */}
@@ -150,7 +150,7 @@ export function Home() {
         {/* Road table - mobile full-screen overlay */}
         {showMobileList && (
           <div className="flex-1 bg-white dark:bg-gray-900 lg:hidden">
-            <RoadTable onSegmentClick={() => setShowMobileList(false)} />
+            <InfraTable onSegmentClick={() => setShowMobileList(false)} />
           </div>
         )}
       </div>

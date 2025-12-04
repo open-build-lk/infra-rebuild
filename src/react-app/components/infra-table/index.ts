@@ -1,0 +1,2 @@
+export { InfraTable } from "./InfraTable";
+

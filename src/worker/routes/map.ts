@@ -2,9 +2,9 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { createDb } from "../db";
-import { damageReports, roadSegments } from "../db/schema";
+import { damageReports, infraSegments } from "../db/schema";
 import { eq, and, desc, or } from "drizzle-orm";
-import { snapToRoads, calculateMidpoint } from "../services/roadsService";
+import { snapToPath, calculateMidpoint } from "../services/infrastructureService";
 
 const mapRoutes = new Hono<{ Bindings: Env }>();
 
@@ -29,7 +29,7 @@ const createSegmentSchema = z.object({
 mapRoutes.post("/snap-road", zValidator("json", snapRoadSchema), async (c) => {
   const { startLat, startLng, endLat, endLng } = c.req.valid("json");
 
-  const snappedPath = await snapToRoads(
+  const snappedPath = await snapToPath(
     startLat,
     startLng,
     endLat,
@@ -52,7 +52,7 @@ mapRoutes.post(
     const db = createDb(c.env.DB);
 
     // Snap the road path
-    const snappedPath = await snapToRoads(
+    const snappedPath = await snapToPath(
       body.startLat,
       body.startLng,
       body.endLat,
@@ -62,7 +62,7 @@ mapRoutes.post(
 
     const segmentId = crypto.randomUUID();
 
-    await db.insert(roadSegments).values({
+    await db.insert(infraSegments).values({
       id: segmentId,
       reportId: body.reportId,
       startLat: body.startLat,
@@ -89,23 +89,23 @@ mapRoutes.get("/segments", async (c) => {
   // Get segments with their associated damage reports - ONLY verified ones
   const results = await db
     .select({
-      id: roadSegments.id,
-      reportId: roadSegments.reportId,
-      snappedPath: roadSegments.snappedPath,
-      roadName: roadSegments.roadName,
-      roadNo: roadSegments.roadNo,
-      province: roadSegments.province,
-      reason: roadSegments.reason,
-      fromKm: roadSegments.fromKm,
-      toKm: roadSegments.toKm,
+      id: infraSegments.id,
+      reportId: infraSegments.reportId,
+      snappedPath: infraSegments.snappedPath,
+      roadName: infraSegments.roadName,
+      roadNo: infraSegments.roadNo,
+      province: infraSegments.province,
+      reason: infraSegments.reason,
+      fromKm: infraSegments.fromKm,
+      toKm: infraSegments.toKm,
       damageType: damageReports.damageType,
       damageLevel: damageReports.damageLevel,
       description: damageReports.description,
       status: damageReports.status,
       reportedAt: damageReports.createdAt,
     })
-    .from(roadSegments)
-    .innerJoin(damageReports, eq(roadSegments.reportId, damageReports.id))
+    .from(infraSegments)
+    .innerJoin(damageReports, eq(infraSegments.reportId, damageReports.id))
     .where(
       or(
         eq(damageReports.status, "verified"),
@@ -144,17 +144,17 @@ mapRoutes.get("/segments/verified", async (c) => {
 
   const results = await db
     .select({
-      id: roadSegments.id,
-      reportId: roadSegments.reportId,
-      snappedPath: roadSegments.snappedPath,
-      roadName: roadSegments.roadName,
+      id: infraSegments.id,
+      reportId: infraSegments.reportId,
+      snappedPath: infraSegments.snappedPath,
+      roadName: infraSegments.roadName,
       damageType: damageReports.damageType,
       damageLevel: damageReports.damageLevel,
       description: damageReports.description,
       reportedAt: damageReports.createdAt,
     })
-    .from(roadSegments)
-    .innerJoin(damageReports, eq(roadSegments.reportId, damageReports.id))
+    .from(infraSegments)
+    .innerJoin(damageReports, eq(infraSegments.reportId, damageReports.id))
     .where(
       or(
         eq(damageReports.status, "verified"),

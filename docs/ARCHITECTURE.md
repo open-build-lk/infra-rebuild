@@ -1,6 +1,6 @@
-# RDA Status - Application Architecture
+# Infrastructure Recovery - Application Architecture
 
-Sri Lanka Road Network Damage Tracking System
+Sri Lanka Infrastructure Damage Tracking System
 
 ## Tech Stack
 
@@ -60,7 +60,7 @@ src/
 | `verification` | Email/password tokens |
 | `locations` | Hierarchical geography (province > district > city) |
 | `damage_reports` | Infrastructure damage submissions |
-| `road_segments` | GPS paths snapped to roads |
+| `infra_segments` | GPS paths snapped to infrastructure |
 | `media_attachments` | Photos/videos (R2 storage) |
 | `rebuild_projects` | Reconstruction projects |
 | `milestones` | Project phases |
@@ -73,7 +73,7 @@ src/
 
 ```
 damage_reports ──┬── media_attachments
-                 ├── road_segments
+                 ├── infra_segments
                  ├── state_transitions
                  ├── comments
                  └── report_project_links ─── rebuild_projects
@@ -88,8 +88,8 @@ damage_reports ──┬── media_attachments
 | Method | Route | Description |
 |--------|-------|-------------|
 | `*` | `/api/auth/*` | Better-Auth endpoints |
-| `POST` | `/api/v1/map/snap-road` | Snap GPS to road network |
-| `POST` | `/api/v1/map/segments` | Create road segment |
+| `POST` | `/api/v1/map/snap-path` | Snap GPS to infrastructure network |
+| `POST` | `/api/v1/map/segments` | Create infrastructure segment |
 | `GET` | `/api/v1/map/segments` | List all segments |
 | `GET` | `/api/v1/map/segments/verified` | Verified segments only |
 
@@ -162,7 +162,7 @@ BETTER_AUTH_URL=http://localhost:5173
 PRODUCTION_URL=https://your-domain.com
 ENVIRONMENT=development
 MAILGUN_API_KEY=<for email>
-GOOGLE_MAPS_API_KEY=<for road snapping>
+GOOGLE_MAPS_API_KEY=<for path snapping>
 ```
 
 ### Frontend (.env)
@@ -190,9 +190,9 @@ bun run db:migrate    # Apply locally
 
 ## Key Features
 
-1. **Interactive Map** - Leaflet-based visualization of damaged roads
+1. **Interactive Map** - Leaflet-based visualization of damaged infrastructure
 2. **Damage Reporting** - Public form for citizens to report issues
-3. **Road Snapping** - GPS coordinates snapped to actual roads via Google API
+3. **Path Snapping** - GPS coordinates snapped to actual infrastructure via Google API
 4. **Project Tracking** - Monitor reconstruction efforts
 5. **Role-Based Access** - Different views for citizens, officers, planners
 6. **Session Auth** - Secure cookie-based authentication via Better-Auth

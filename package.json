@@ -1,6 +1,6 @@
 {
-  "name": "rda-status",
-  "description": "A template for building a React application with Vite, Hono, and Cloudflare Workers",
+  "name": "infra-rebuild",
+  "description": "Sri Lanka Infrastructure Recovery - Real-time damage tracking and recovery coordination platform",
   "private": true,
   "cloudflare": {
     "label": "Vite React Template",
@@ -66,7 +66,7 @@
     "lint": "eslint .",
     "preview": "bun run build && vite preview",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "wrangler d1 migrations apply rda-status-db --local",
+    "db:migrate": "wrangler d1 migrations apply infra-db --local",
     "db:studio": "drizzle-kit studio"
   },
   "type": "module"

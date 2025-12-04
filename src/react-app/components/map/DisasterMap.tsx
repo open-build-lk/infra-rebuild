@@ -10,12 +10,12 @@ import {
 import { DivIcon, LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapLegend } from "./MapLegend";
-import { useRoadSegments, ProcessedRoadSegment } from "@/hooks/useRoadSegments";
+import { useInfraSegments, ProcessedInfraSegment } from "@/hooks/useInfraSegments";
 import { useCitizenIncidents, ProcessedIncident } from "@/hooks/useCitizenIncidents";
 import { useMapViewStore } from "@/stores/mapView";
 
 // Re-export for backwards compatibility
-export type RoadSegmentData = ProcessedRoadSegment;
+export type InfraSegmentData = ProcessedInfraSegment;
 export type { ProcessedIncident };
 
 // All blocked roads are red
@@ -116,13 +116,13 @@ function MapController() {
   return null;
 }
 
-// Re-export useRoadSegments from the hook module for backwards compatibility with RoadTable
-export { useRoadSegments } from "@/hooks/useRoadSegments";
+// Re-export useInfraSegments from the hook module for backwards compatibility with InfraTable
+export { useInfraSegments } from "@/hooks/useInfraSegments";
 
 export function DisasterMap() {
   // Sri Lanka center coordinates
   const center: LatLngExpression = [7.8731, 80.7718];
-  const { segments, isLoading: segmentsLoading, error: segmentsError } = useRoadSegments();
+  const { segments, isLoading: segmentsLoading, error: segmentsError } = useInfraSegments();
   const { incidents, isLoading: incidentsLoading, error: incidentsError } = useCitizenIncidents();
   const { selectedSegmentId } = useMapViewStore();
 
@@ -186,7 +186,7 @@ export function DisasterMap() {
                     {seg.damageType.replace("_", " ")}
                   </h3>
                   <p className="mb-1 text-sm font-medium text-gray-700">
-                    {seg.roadNo} - {seg.roadName}
+                    {seg.segmentNo} - {seg.segmentName}
                   </p>
                   <p className="mb-1 text-xs text-gray-500">
                     {seg.province} Province
@@ -215,7 +215,7 @@ export function DisasterMap() {
                     {seg.damageType.replace("_", " ")}
                   </h3>
                   <p className="mb-1 text-sm font-medium text-gray-700">
-                    {seg.roadNo} - {seg.roadName}
+                    {seg.segmentNo} - {seg.segmentName}
                   </p>
                   <p className="mb-1 text-xs text-gray-500">
                     {seg.province} Province

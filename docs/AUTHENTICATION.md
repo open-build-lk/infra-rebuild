@@ -1,10 +1,10 @@
 # Authentication System
 
-This document describes the Better-Auth implementation for RDA Status.
+This document describes the Better-Auth implementation for Infrastructure Recovery.
 
 ## Overview
 
-RDA Status uses [Better-Auth](https://better-auth.com) for authentication, replacing the previous JWT-based system. Better-Auth provides:
+Infrastructure Recovery uses [Better-Auth](https://better-auth.com) for authentication, replacing the previous JWT-based system. Better-Auth provides:
 
 - Session-based authentication with httpOnly cookies
 - Secure password hashing (bcrypt)

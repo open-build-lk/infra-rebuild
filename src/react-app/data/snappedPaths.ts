@@ -2,7 +2,7 @@
 // Generated: 2025-11-30T12:46:31.408Z
 // DO NOT EDIT - regenerate with: bun run scripts/snap-roads.ts
 
-export const snappedRoadPaths: Record<string, Array<{ lat: number; lng: number }>> = {
+export const snappedPaths: Record<string, Array<{ lat: number; lng: number }>> = {
   "rs-001": [
     {
       "lat": 7.41627,

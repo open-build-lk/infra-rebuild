@@ -1,19 +1,20 @@
-# Sri Lanka Road Network Status
+# Sri Lanka Infrastructure Recovery
 
-A real-time platform for tracking road infrastructure damage across Sri Lanka's national road network. This platform displays road closures, damage reports, and traffic disruptions caused by natural disasters, enabling citizens to plan travel routes and authorities to coordinate repair efforts.
+A real-time platform for tracking infrastructure damage across Sri Lanka. This platform displays damage reports, recovery status, and coordinates repair efforts for roads, bridges, railways, and other critical infrastructure affected by natural disasters.
 
 ## Project Scope
 
-This platform serves as a public information system for road network status in Sri Lanka:
+This platform serves as a public information system for infrastructure recovery in Sri Lanka:
 
-- **Real-time damage visualization** - Interactive map showing blocked and damaged road segments
+- **Real-time damage visualization** - Interactive map showing damaged and blocked infrastructure
 - **Damage classification** - Categorization by type (flooding, landslides, washouts, collapses, blockages)
 - **Severity levels** - Clear indication of damage severity from low to critical
-- **Province-level coverage** - All 9 provinces with national (A/B roads) and provincial road data
+- **Province-level coverage** - All 9 provinces with national infrastructure data
+- **Recovery tracking** - Monitor reconstruction projects and progress
 
 ### Data Source
 
-Road damage data is provided by the **Ministry of Transport, Highways and Urban Development** through the Road Development Authority (RDA).
+Infrastructure damage data is provided by government agencies and field officers through the platform.
 
 ## Tech Stack
 
@@ -90,7 +91,7 @@ src/
 │   ├── components/     # Reusable UI components
 │   │   ├── layout/     # Header, Footer, Navigation
 │   │   └── map/        # Map components (DisasterMap, MapLegend)
-│   ├── data/           # Static data (road segments, snapped paths)
+│   ├── data/           # Static data (infrastructure segments, paths)
 │   ├── pages/          # Page components
 │   └── stores/         # Zustand state stores
 ├── worker/             # Backend Hono API
@@ -98,16 +99,14 @@ src/
 │   ├── middleware/     # Auth and other middleware
 │   └── routes/         # API route handlers
 └── shared/             # Shared types and constants
-scripts/
-└── snap-roads.ts       # One-time script to pre-compute road geometries
 ```
 
 ## Features
 
-- **Interactive Map** - Pan, zoom, and click on road segments to view damage details
-- **Road Geometry** - Damage displayed along actual road paths (not straight lines)
+- **Interactive Map** - Pan, zoom, and click on infrastructure to view damage details
+- **Path Geometry** - Damage displayed along actual paths (not straight lines)
 - **Damage Markers** - Visual indicators at damage locations with type-specific icons
-- **Severity Coloring** - Color-coded road segments (yellow/orange/red/dark red)
+- **Severity Coloring** - Color-coded segments (yellow/orange/red/dark red)
 - **Mobile Responsive** - Works on desktop and mobile devices
 - **Dark Mode** - Supports system dark mode preference
 

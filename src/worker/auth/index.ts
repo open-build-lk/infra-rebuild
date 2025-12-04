@@ -14,7 +14,7 @@ async function sendEmailViaMailgun(
   html: string
 ) {
   const domain = "mail.road-lk.org";
-  const from = `Sri Lanka Road Status <noreply@${domain}>`;
+  const from = `Sri Lanka Infrastructure Recovery <noreply@${domain}>`;
 
   const formData = new FormData();
   formData.append("from", from);
@@ -73,7 +73,7 @@ export function createAuth(env: Env) {
             </head>
             <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; background-color: #f5f5f5;">
               <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 8px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <h1 style="color: #1a1a1a; font-size: 24px; margin-bottom: 16px;">Sign in to Sri Lanka Road Status</h1>
+                <h1 style="color: #1a1a1a; font-size: 24px; margin-bottom: 16px;">Sign in to Sri Lanka Infrastructure Recovery</h1>
                 <p style="color: #666; font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
                   Click the button below to sign in to your account. This link will expire in 5 minutes.
                 </p>
@@ -104,7 +104,7 @@ export function createAuth(env: Env) {
           await sendEmailViaMailgun(
             env,
             email,
-            "Sign in to Sri Lanka Road Status",
+            "Sign in to Sri Lanka Infrastructure Recovery",
             html
           );
         },

@@ -1,7 +1,7 @@
 // Email service with Mailgun integration
 
 const MAILGUN_DOMAIN = "mail.road-lk.org";
-const FROM_ADDRESS = `Sri Lanka Road Status <noreply@${MAILGUN_DOMAIN}>`;
+const FROM_ADDRESS = `Sri Lanka Infrastructure Recovery <noreply@${MAILGUN_DOMAIN}>`;
 
 export async function sendEmail(
   env: Env,
@@ -57,7 +57,7 @@ function wrapInEmailTemplate(content: string): string {
 
 export function getMagicLinkEmailHtml(url: string): string {
   return wrapInEmailTemplate(`
-    <h1 style="color: #1a1a1a; font-size: 24px; margin-bottom: 16px;">Sign in to Sri Lanka Road Status</h1>
+    <h1 style="color: #1a1a1a; font-size: 24px; margin-bottom: 16px;">Sign in to Sri Lanka Infrastructure Recovery</h1>
     <p style="color: #666; font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
       Click the button below to sign in to your account. This link will expire in 5 minutes.
     </p>
@@ -85,9 +85,9 @@ export function getInvitationEmailHtml(params: {
   });
 
   return wrapInEmailTemplate(`
-    <h1 style="color: #1a1a1a; font-size: 24px; margin-bottom: 16px;">You're Invited to Sri Lanka Road Status</h1>
+    <h1 style="color: #1a1a1a; font-size: 24px; margin-bottom: 16px;">You're Invited to Sri Lanka Infrastructure Recovery</h1>
     <p style="color: #666; font-size: 16px; line-height: 1.5; margin-bottom: 16px;">
-      <strong>${params.inviterName}</strong> has invited you to join the Sri Lanka Road Status platform as a <strong>${roleLabel}</strong>.
+      <strong>${params.inviterName}</strong> has invited you to join the Sri Lanka Infrastructure Recovery platform as a <strong>${roleLabel}</strong>.
     </p>
     <p style="color: #666; font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
       This invitation will expire on <strong>${expiryDate}</strong>.

@@ -12,14 +12,14 @@ interface ProvinceGroup {
   bounds: LatLngBounds;
 }
 
-interface RoadTableProps {
+interface InfraTableProps {
   onSegmentClick?: () => void;
 }
 
-// Red color for blocked roads
+// Red color for blocked infrastructure
 const BLOCKED_COLOR = "#DC2626";
 
-export function RoadTable(props: RoadTableProps = {}) {
+export function InfraTable(props: InfraTableProps = {}) {
   const { onSegmentClick } = props;
   const { incidents, isLoading, error } = useCitizenIncidents();
   const {
@@ -204,3 +204,4 @@ export function RoadTable(props: RoadTableProps = {}) {
     </div>
   );
 }
+

@@ -2,16 +2,16 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { createDb } from "../db";
-import { damageReports, roadSegments, mediaAttachments, user, userInvitations } from "../db/schema";
+import { damageReports, infraSegments, mediaAttachments, user, userInvitations } from "../db/schema";
 import { eq, desc } from "drizzle-orm";
 import { sendEmail, getInvitationEmailHtml } from "../services/email";
 import { getAuth } from "../middleware/auth";
 import {
-  initialRoadSegments,
+  initialSegments,
   mapReasonToDamageType,
   mapReasonToSeverity,
-} from "../../react-app/data/initialRoadSegments";
-import { snappedRoadPaths } from "../../react-app/data/snappedRoadPaths";
+} from "../../react-app/data/initialSegments";
+import { snappedPaths } from "../../react-app/data/snappedPaths";
 import { authMiddleware, requireRole } from "../middleware/auth";
 
 const adminRoutes = new Hono<{ Bindings: Env }>();
@@ -26,8 +26,8 @@ adminRoutes.post("/import-segments", requireRole("admin", "super_admin"), async 
   const now = new Date();
 
   // Prepare migration data inline
-  const data = initialRoadSegments.map((seg) => {
-    const path = snappedRoadPaths[seg.id] || [
+  const data = initialSegments.map((seg) => {
+    const path = snappedPaths[seg.id] || [
       { lat: seg.fromLat, lng: seg.fromLng },
       { lat: seg.toLat, lng: seg.toLng },
     ];
@@ -35,8 +35,8 @@ adminRoutes.post("/import-segments", requireRole("admin", "super_admin"), async 
     return {
       id: seg.id,
       reportId: `report-${seg.id}`,
-      roadNo: seg.roadNo,
-      roadName: seg.roadName,
+      roadNo: seg.segmentNo, // Map to database column name
+      roadName: seg.segmentName, // Map to database column name
       province: seg.province,
       reason: seg.reason,
       damageType: mapReasonToDamageType(seg.reason),
@@ -73,7 +73,7 @@ adminRoutes.post("/import-segments", requireRole("admin", "super_admin"), async 
       });
 
       // Create road segment
-      await db.insert(roadSegments).values({
+      await db.insert(infraSegments).values({
         id: seg.id,
         reportId: seg.reportId,
         roadNo: seg.roadNo,
@@ -109,7 +109,7 @@ adminRoutes.post("/import-segments", requireRole("admin", "super_admin"), async 
 // Requires admin or super_admin role
 adminRoutes.get("/segments-count", requireRole("admin", "super_admin"), async (c) => {
   const db = createDb(c.env.DB);
-  const results = await db.select().from(roadSegments);
+  const results = await db.select().from(infraSegments);
   return c.json({ count: results.length });
 });
 
@@ -394,7 +394,7 @@ adminRoutes.post(
       await sendEmail(
         c.env,
         email,
-        "You're Invited to Sri Lanka Road Status",
+        "You're Invited to Sri Lanka Infrastructure Recovery",
         getInvitationEmailHtml({
           inviterName,
           role,

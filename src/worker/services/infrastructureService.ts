@@ -14,10 +14,10 @@ interface DirectionsResponse {
 }
 
 /**
- * Snaps two GPS coordinates to the nearest road and returns
- * the road-following path between them using Google Directions API.
+ * Snaps two GPS coordinates to the nearest path and returns
+ * the path-following route between them using Google Directions API.
  */
-export async function snapToRoads(
+export async function snapToPath(
   startLat: number,
   startLng: number,
   endLat: number,
@@ -41,7 +41,7 @@ export async function snapToRoads(
     ];
   }
 
-  // Decode the polyline to get actual road coordinates
+  // Decode the polyline to get actual coordinates
   const encodedPath = data.routes[0].overview_polyline.points;
   return decodePolyline(encodedPath);
 }
@@ -109,3 +109,4 @@ export function calculateMidpoint(
   const midIndex = Math.floor(path.length / 2);
   return path[midIndex];
 }
+

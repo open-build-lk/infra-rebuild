@@ -1,18 +1,18 @@
-// Data migration script for road segments
+// Data migration script for infrastructure segments
 // This prepares data from hardcoded files for database import
 
 import {
-  initialRoadSegments,
+  initialSegments,
   mapReasonToDamageType,
   mapReasonToSeverity,
-} from "../src/react-app/data/initialRoadSegments";
-import { snappedRoadPaths } from "../src/react-app/data/snappedRoadPaths";
+} from "../src/react-app/data/initialSegments";
+import { snappedPaths } from "../src/react-app/data/snappedPaths";
 
 export interface MigrationSegment {
   id: string;
   reportId: string;
-  roadNo: string;
-  roadName: string;
+  segmentNo: string;
+  segmentName: string;
   province: string;
   reason: string;
   damageType: string;
@@ -28,9 +28,9 @@ export interface MigrationSegment {
 }
 
 export function prepareMigrationData(): MigrationSegment[] {
-  return initialRoadSegments.map((seg) => {
+  return initialSegments.map((seg) => {
     // Use pre-computed snapped path, or fall back to straight line
-    const path = snappedRoadPaths[seg.id] || [
+    const path = snappedPaths[seg.id] || [
       { lat: seg.fromLat, lng: seg.fromLng },
       { lat: seg.toLat, lng: seg.toLng },
     ];
@@ -38,8 +38,8 @@ export function prepareMigrationData(): MigrationSegment[] {
     return {
       id: seg.id,
       reportId: `report-${seg.id}`,
-      roadNo: seg.roadNo,
-      roadName: seg.roadName,
+      segmentNo: seg.segmentNo,
+      segmentName: seg.segmentName,
       province: seg.province,
       reason: seg.reason,
       damageType: mapReasonToDamageType(seg.reason),
@@ -55,3 +55,4 @@ export function prepareMigrationData(): MigrationSegment[] {
     };
   });
 }
+

@@ -1,12 +1,12 @@
 /**
- * One-time script to pre-compute snapped road paths using Google Directions API.
- * Run with: bun run scripts/snap-roads.ts
+ * One-time script to pre-compute snapped infrastructure paths using Google Directions API.
+ * Run with: bun run scripts/snap-paths.ts
  *
- * This fetches the actual road geometry for each segment and saves it to the data file.
+ * This fetches the actual path geometry for each segment and saves it to the data file.
  * After running, the app uses pre-computed paths - zero API calls at runtime.
  */
 
-import { initialRoadSegments } from "../src/react-app/data/initialRoadSegments";
+import { initialSegments } from "../src/react-app/data/initialSegments";
 
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
@@ -68,7 +68,7 @@ function decodePolyline(encoded: string): SnappedPoint[] {
   return points;
 }
 
-async function snapToRoads(
+async function snapToPath(
   startLat: number,
   startLng: number,
   endLat: number,
@@ -95,23 +95,23 @@ async function snapToRoads(
 }
 
 async function main() {
-  console.log("Snapping roads to actual road geometry...\n");
+  console.log("Snapping infrastructure paths to actual geometry...\n");
 
   const results: Record<string, SnappedPoint[]> = {};
 
   // Filter to only segments (not point damage)
-  const segments = initialRoadSegments.filter(
+  const segments = initialSegments.filter(
     (seg) => seg.fromLat !== seg.toLat || seg.fromLng !== seg.toLng
   );
 
-  console.log(`Processing ${segments.length} road segments...\n`);
+  console.log(`Processing ${segments.length} infrastructure segments...\n`);
 
   for (let i = 0; i < segments.length; i++) {
     const seg = segments[i];
-    process.stdout.write(`[${i + 1}/${segments.length}] ${seg.roadNo} - ${seg.roadName}... `);
+    process.stdout.write(`[${i + 1}/${segments.length}] ${seg.segmentNo} - ${seg.segmentName}... `);
 
     try {
-      const path = await snapToRoads(seg.fromLat, seg.fromLng, seg.toLat, seg.toLng);
+      const path = await snapToPath(seg.fromLat, seg.fromLng, seg.toLat, seg.toLng);
       results[seg.id] = path;
       console.log(`✓ (${path.length} points)`);
     } catch (error) {
@@ -127,16 +127,17 @@ async function main() {
   }
 
   // Generate the output file
-  const output = `// Auto-generated snapped road paths
+  const output = `// Auto-generated snapped infrastructure paths
 // Generated: ${new Date().toISOString()}
-// DO NOT EDIT - regenerate with: bun run scripts/snap-roads.ts
+// DO NOT EDIT - regenerate with: bun run scripts/snap-paths.ts
 
-export const snappedRoadPaths: Record<string, Array<{ lat: number; lng: number }>> = ${JSON.stringify(results, null, 2)};
+export const snappedPaths: Record<string, Array<{ lat: number; lng: number }>> = ${JSON.stringify(results, null, 2)};
 `;
 
-  await Bun.write("src/react-app/data/snappedRoadPaths.ts", output);
+  await Bun.write("src/react-app/data/snappedPaths.ts", output);
 
-  console.log(`\n✅ Done! Saved ${Object.keys(results).length} snapped paths to src/react-app/data/snappedRoadPaths.ts`);
+  console.log(`\n✅ Done! Saved ${Object.keys(results).length} snapped paths to src/react-app/data/snappedPaths.ts`);
 }
 
 main();
+

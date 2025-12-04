@@ -74,7 +74,7 @@ async function sendVerificationEmail(
   verifyUrl: string
 ) {
   const domain = "mail.road-lk.org";
-  const from = `Sri Lanka Road Status <noreply@${domain}>`;
+  const from = `Sri Lanka Infrastructure Recovery <noreply@${domain}>`;
 
   const html = `
     <!DOCTYPE html>

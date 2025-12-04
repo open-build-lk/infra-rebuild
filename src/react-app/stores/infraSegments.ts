@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { LatLngExpression } from "leaflet";
 
-export interface RoadSegmentData {
+export interface InfraSegmentData {
   id: string;
   reportId: string | null;
-  roadNo: string | null;
-  roadName: string | null;
+  segmentNo: string | null;
+  segmentName: string | null;
   province: string | null;
   reason: string | null;
   fromKm: number | null;
@@ -18,10 +18,10 @@ export interface RoadSegmentData {
   status: string | null;
 }
 
-export interface ProcessedRoadSegment {
+export interface ProcessedInfraSegment {
   id: string;
-  roadNo: string;
-  roadName: string | null;
+  segmentNo: string;
+  segmentName: string | null;
   province: string;
   path: LatLngExpression[];
   midpoint: LatLngExpression;
@@ -31,19 +31,19 @@ export interface ProcessedRoadSegment {
   reason: string;
 }
 
-interface RoadSegmentsState {
-  rawSegments: RoadSegmentData[];
-  segments: ProcessedRoadSegment[];
+interface InfraSegmentsState {
+  rawSegments: InfraSegmentData[];
+  segments: ProcessedInfraSegment[];
   isLoading: boolean;
   error: string | null;
   hasFetched: boolean;
 }
 
-interface RoadSegmentsActions {
+interface InfraSegmentsActions {
   fetchSegments: () => Promise<void>;
 }
 
-function processSegments(rawSegments: RoadSegmentData[]): ProcessedRoadSegment[] {
+function processSegments(rawSegments: InfraSegmentData[]): ProcessedInfraSegment[] {
   return rawSegments
     .filter((seg) => seg.path && seg.path.length >= 2)
     .map((seg) => {
@@ -54,8 +54,8 @@ function processSegments(rawSegments: RoadSegmentData[]): ProcessedRoadSegment[]
 
       return {
         id: seg.id,
-        roadNo: seg.roadNo || "Unknown",
-        roadName: seg.roadName,
+        segmentNo: seg.segmentNo || "Unknown",
+        segmentName: seg.segmentName,
         province: seg.province || "Unknown",
         path,
         midpoint,
@@ -63,13 +63,13 @@ function processSegments(rawSegments: RoadSegmentData[]): ProcessedRoadSegment[]
         severity: seg.severity || 2,
         description:
           seg.description ||
-          `${seg.roadNo} from km ${seg.fromKm} to km ${seg.toKm}`,
+          `${seg.segmentNo} from km ${seg.fromKm} to km ${seg.toKm}`,
         reason: seg.reason || seg.description || "Unknown",
       };
     });
 }
 
-export const useRoadSegmentsStore = create<RoadSegmentsState & RoadSegmentsActions>()(
+export const useInfraSegmentsStore = create<InfraSegmentsState & InfraSegmentsActions>()(
   (set, get) => ({
     rawSegments: [],
     segments: [],
@@ -89,7 +89,7 @@ export const useRoadSegmentsStore = create<RoadSegmentsState & RoadSegmentsActio
         const res = await fetch("/api/v1/map/segments");
         if (!res.ok) throw new Error("Failed to fetch segments");
 
-        const rawSegments = (await res.json()) as RoadSegmentData[];
+        const rawSegments = (await res.json()) as InfraSegmentData[];
         const segments = processSegments(rawSegments);
 
         set({
@@ -108,3 +108,4 @@ export const useRoadSegmentsStore = create<RoadSegmentsState & RoadSegmentsActio
     },
   })
 );
+

@@ -1,6 +1,6 @@
 # Database Schema
 
-RDA Status uses Cloudflare D1 (SQLite) with Drizzle ORM.
+Infrastructure Recovery uses Cloudflare D1 (SQLite) with Drizzle ORM.
 
 ## Tables Overview
 
@@ -17,7 +17,7 @@ RDA Status uses Cloudflare D1 (SQLite) with Drizzle ORM.
          │
          ▼
 ┌─────────────────┐     ┌─────────────────┐
-│ damage_reports  │────<│  road_segments  │
+│ damage_reports  │────<│ infra_segments  │
 └────────┬────────┘     └─────────────────┘
          │              ┌─────────────────┐
          ├─────────────<│media_attachments│

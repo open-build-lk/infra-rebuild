@@ -18,7 +18,7 @@ export const user = sqliteTable("user", {
     .default(sql`(unixepoch())`)
     .$onUpdate(() => new Date())
     .notNull(),
-  // Custom fields for RDA Status
+  // Custom fields for Infrastructure Recovery
   phone: text("phone"),
   role: text("role").notNull().default("citizen"),
   provinceScope: text("province_scope"),

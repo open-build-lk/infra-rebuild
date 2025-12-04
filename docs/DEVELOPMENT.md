@@ -12,7 +12,7 @@
 
 ```bash
 git clone <repo-url>
-cd rda-status
+cd infra-rebuild
 bun install
 ```
 
@@ -31,7 +31,7 @@ BETTER_AUTH_URL=http://localhost:5173
 PRODUCTION_URL=https://your-domain.com
 ENVIRONMENT=development
 MAILGUN_API_KEY=      # Optional, for email
-GOOGLE_MAPS_API_KEY=  # For road snapping
+GOOGLE_MAPS_API_KEY=  # For path snapping
 ```
 
 Configure `.env` (frontend):

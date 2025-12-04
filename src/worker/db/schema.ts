@@ -243,9 +243,9 @@ export const reportProjectLinks = sqliteTable(
   ]
 );
 
-// ============ ROAD SEGMENTS ============
-export const roadSegments = sqliteTable(
-  "road_segments",
+// ============ INFRASTRUCTURE SEGMENTS ============
+export const infraSegments = sqliteTable(
+  "road_segments", // Keep table name for backwards compatibility
   {
     id: text("id").primaryKey(),
     reportId: text("report_id").references(() => damageReports.id),
@@ -265,8 +265,8 @@ export const roadSegments = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   },
   (table) => [
-    index("road_segments_report_idx").on(table.reportId),
-    index("road_segments_province_idx").on(table.province),
+    index("infra_segments_report_idx").on(table.reportId),
+    index("infra_segments_province_idx").on(table.province),
   ]
 );
 
@@ -349,13 +349,13 @@ export const damageReportsRelations = relations(
     stateTransitions: many(stateTransitions),
     projectLinks: many(reportProjectLinks),
     comments: many(comments),
-    roadSegments: many(roadSegments),
+    infraSegments: many(infraSegments),
   })
 );
 
-export const roadSegmentsRelations = relations(roadSegments, ({ one }) => ({
+export const infraSegmentsRelations = relations(infraSegments, ({ one }) => ({
   report: one(damageReports, {
-    fields: [roadSegments.reportId],
+    fields: [infraSegments.reportId],
     references: [damageReports.id],
   }),
 }));
