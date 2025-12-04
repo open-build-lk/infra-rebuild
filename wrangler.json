@@ -18,7 +18,7 @@
     {
       "binding": "DB",
       "database_name": "infra-db",
-      "database_id": "REPLACE_WITH_NEW_DATABASE_ID",
+      "database_id": "fc999c9c-6baf-4086-a700-0eef5766b697",
       "migrations_dir": "./src/worker/db/migrations"
     }
   ],
